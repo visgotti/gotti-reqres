@@ -1,0 +1,25 @@
+{
+  "broker": {
+    "URI": "tcp://127.0.0.1:4200"
+  },
+  "servers": [
+    {
+      "messengerOptions":
+      {
+        "id": "requestServer1",
+        "request": {
+          "timeout": 5000
+        },
+        "brokerURI": "tcp://127.0.0.1:4200"
+      }
+    },
+    {
+      "messengerOptions":
+      {
+        "id": "responseServer1",
+        "response": true,
+        "brokerURI": "tcp://127.0.0.1:4200"
+      }
+    }
+  ]
+}
