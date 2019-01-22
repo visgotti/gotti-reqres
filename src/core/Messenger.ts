@@ -1,5 +1,4 @@
 import * as zmq from 'zeromq';
-import { SERIALIZER_TYPES, get } from '../Serializers';
 
 /*
     Handler is a function that is used to process data
