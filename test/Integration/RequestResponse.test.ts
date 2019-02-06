@@ -36,7 +36,7 @@ describe('Request to response server communication', function() {
 
     describe('Sending a request', function() {
         it('Sends data returned from the hook in createRequest and retrives data returned from hook in createResponse.', function(done) {
-            requestServer.createRequest("foo", responseServer.serverId)
+            requestServer.createRequest("foo", responseServer.serverId);
 
             responseServer.createResponse("foo", function(data) {
                 assert.strictEqual(data, 12);
