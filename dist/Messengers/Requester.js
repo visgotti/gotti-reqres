@@ -45,11 +45,12 @@ class Requester {
         this.dealerSocket.on('message', (...args) => {
             if (args[1]) {
                 const response = JSON.parse(args[1]);
+                const sequence = response[0];
                 const callback = this.onResponseHandlers.get(response[0]);
                 if (callback) {
-                    this.onResponseHandlers.delete(response[0]);
+                    this.onResponseHandlers.delete(sequence);
                     // cancel the timeout since we got the response
-                    this.removeTimeout(response.sequence);
+                    this.removeTimeout(sequence);
                     return callback(null, response[1]);
                 }
             }
