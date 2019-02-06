@@ -1,6 +1,6 @@
 {
   "name": "gotti-reqres",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Low level implementation of zeromq dealer and router sockets to make asynchronous req/res calls.",
   "scripts": {
     "build": "tsc",
