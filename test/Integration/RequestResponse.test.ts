@@ -12,12 +12,15 @@ describe('Request to response server communication', function() {
     let requestServer;
     let responseServer;
 
-    before('Initialize two servers, one as a requester, one as a responder.', (done) => {
+    before('Initialize two servers, one as a requester, one as a responder.', async () => {
+        console.log('yo');
         config = fs.readFileSync(path.resolve('test', 'messenger.config.json'));
         config = JSON.parse(config);
         let brokerURI = config.broker.URI;
-        broker = new Broker(brokerURI, "TEST_BROKER");
-
+        broker = new Broker();
+        console.log('yo1', { brokerURI });
+        await broker.init(brokerURI, "TEST_BROKER");
+        console.log('yo2');
         for(let i = 0; i < config.servers.length; i++) {
             const serverData = config.servers[i];
             if (!("request" in serverData.messengerOptions) && !("response" in serverData.messengerOptions)) continue;
@@ -29,9 +32,12 @@ describe('Request to response server communication', function() {
                 responseServer = server;
             }
         }
-        setTimeout(() => {
-            done();
-        }, 500)
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 500)
+        })
+    
     });
 
     describe('Sending a request', function() {
@@ -39,11 +45,13 @@ describe('Request to response server communication', function() {
             requestServer.createRequest("foo", responseServer.serverId);
 
             responseServer.createResponse("foo", function(data) {
+                console.log('in res', data);
                 assert.strictEqual(data, 12);
                 return data + 10;
             });
 
             requestServer.requests.foo(12).then(response => {
+                console.log('got res')
                 assert.strictEqual(response, 22);
                 done();
             });

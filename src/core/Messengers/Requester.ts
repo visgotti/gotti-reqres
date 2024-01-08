@@ -1,6 +1,16 @@
 import { REQUEST_MESSAGE, RequestOptions, Sequence } from '../Messenger';
 import Timeout = NodeJS.Timeout;
 
+function getMethods(obj)
+{
+    var res = [];
+    for(var m in obj) {
+        if(typeof obj[m] == "function") {
+            res.push(m)
+        }
+    }
+    return res;
+}
 export class Requester {
     private dealerSocket: any;
     private onResponseHandlers: Map<Sequence, Function>;
@@ -39,12 +49,13 @@ export class Requester {
     private sendRequest(data, name, to, onResponse) {
         const request: REQUEST_MESSAGE = {
             name,
-            from: this.dealerSocket.identity,
+            from: this.dealerSocket.routingId,
             sequence: this.sequence,
             data,
         };
 
         const encoded = JSON.stringify(request);
+
         this.dealerSocket.send([ to, '', encoded]);
         this.onResponseHandlers.set(this.sequence, onResponse);
 
@@ -54,8 +65,17 @@ export class Requester {
         this.sequence += 1;
     }
 
-    private registerResponseHandler() {
-        this.dealerSocket.on('message', (...args) => {
+    private async registerResponseHandler() {  
+        if(!('receive' in this.dealerSocket)) {
+            return new Promise((resolve) => {
+                setTimeout(async () => {
+                    await this.registerResponseHandler();
+                    return resolve(true);
+                }, 50);
+            })
+        }    
+
+        this.dealerSocket.receive().then((args)=> {           
             if (args[1]) {
                 const response = JSON.parse(args[1]);
                 const sequence = response[0];
@@ -70,6 +90,8 @@ export class Requester {
                 }
             }
         });
+
+
     }
 
     private addTimeout(sequence) {

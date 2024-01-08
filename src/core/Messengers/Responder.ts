@@ -37,8 +37,16 @@ export class Responder {
         this.dealerSocket.send([ toServerId, '', encoded]);
     }
 
-    private registerOnRequestHandlers() {
-        this.dealerSocket.on('message', (...args) => {
+    private async registerOnRequestHandlers() {
+        if(!('receive' in this.dealerSocket)) {
+            return new Promise((resolve) => {
+                setTimeout(async () => {
+                    await this.registerOnRequestHandlers();
+                    return resolve(true);
+                }, 50);
+            })
+        }    
+        this.dealerSocket.receive().then((args)=> {
             if (args[1]) {
                 const request = JSON.parse(args[1]) as REQUEST_MESSAGE;
                 const response = [request.sequence];
@@ -48,6 +56,7 @@ export class Responder {
                 }
                 this.sendResponse(response, request.from);
             }
+            this.registerOnRequestHandlers();
         });
     }
 }

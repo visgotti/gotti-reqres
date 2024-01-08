@@ -10,18 +10,24 @@ export class Broker {
      * @param {string} routerURI - URI string for the brokers router
      * @param {int} id - Unique identifier of the broker.
      */
-    constructor(routerURI, id) {
-        this.routerSocket = zmq.socket('router');
-        this.routerSocket.identity = `broker ${id} `;
-        this.routerSocket.bindSync(routerURI);
+    constructor() {
+      
+    }
+    public async init(routerURI, id) {
+        console.log('init', id);
+        this.routerSocket = new zmq.Router({ routingId: id });
+        console.log('type', this.routerSocket.routingId);
+        console.log('bind', routerURI);
+        await this.routerSocket.bind(routerURI);
+        console.log('reg')
         this.registerRouterMessages();
     }
 
-    private registerRouterMessages() {
-        // relays message from based on args[1]
-        this.routerSocket.on('message', (...args) => {
+    private async registerRouterMessages() {
+        for await (const args of this.routerSocket) {
+            console.log('reg send', args)
             this.routerSocket.send([args[1], '', args[3]]);
-        });
+        }
     }
 
     public close() {

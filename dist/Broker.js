@@ -12,8 +12,9 @@ class Broker {
      */
     constructor(routerURI, id) {
         this.routerSocket = {};
-        this.routerSocket = zmq.socket('router');
-        this.routerSocket.identity = `broker ${id} `;
+        this.routerSocket = new zmq.Router();
+        console.log('IDENTITY');
+        this.routerSocket.identity = `broker ${id}`;
         this.routerSocket.bindSync(routerURI);
         this.registerRouterMessages();
     }

@@ -21,7 +21,7 @@ class Messenger {
      */
     initializeMessengers(options) {
         if (options.brokerURI) {
-            this.dealerSocket = zmq.socket('dealer');
+            this.dealerSocket = new zmq.Dealer;
             this.dealerSocket.identity = this.serverId;
             this.dealerSocket.connect(options.brokerURI);
         }

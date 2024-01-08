@@ -73,8 +73,8 @@ export class Messenger {
      */
     private initializeMessengers(options: MessengerOptions) {
         if(options.brokerURI) {
-            this.dealerSocket = zmq.socket('dealer');
-            this.dealerSocket.identity = this.serverId;
+            console.log('server id was', this.serverId)
+            this.dealerSocket = new zmq.Dealer({ routingId: this.serverId });
             this.dealerSocket.connect(options.brokerURI);
         }
 
